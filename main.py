@@ -19,7 +19,6 @@ vkids=["versusbattleru","mudakoff","durov"]
 vkid=vkids[2]
 
 
-
 def getData(site, fTrain, fTest, it):
     with urllib.request.urlopen(site) as url:
         cont = str(url.read(), encoding='utf-8')
@@ -76,7 +75,7 @@ def removeTrash(comment):
 
     return newComment
 def parsString(s):
-        resS=""
+    resS=""
         tmpS=""
         s=s.lower()
         for ch in s:
