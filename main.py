@@ -18,7 +18,6 @@ commofPostTest=10
 vkids=["versusbattleru","mudakoff","durov"]
 vkid=vkids[2]
 
-
 def getData(site, fTrain, fTest, it):
     with urllib.request.urlopen(site) as url:
         cont = str(url.read(), encoding='utf-8')
@@ -72,32 +71,28 @@ def removeTrash(comment):
         if (comment[i]==';'):
             openSc=False
             newComment+=' '
-
     return newComment
 def parsString(s):
     resS=""
-        tmpS=""
-        s=s.lower()
-        for ch in s:
-            if (ch in ascii_letters):
-                tmpS+=ch
-            else:
-                #resS+=tmpS
+    tmpS=""
+    s=s.lower()
+    for ch in s:
+        if (ch in ascii_letters):
+            tmpS+=ch
+        else:
+            #resS+=tmpS
                 #tmpS=ch
-                if (tmpS!=""):
-                    resS+=' '
-                    resS+=tmpS
-                else:
-                    resS+=' '
-                    resS+=ch
-                tmpS=""
-        if tmpS=="":
-            resS+=tmpS
-        #print(resS)
-        return resS
-
-
-
+            if(tmpS!=""):
+                resS+=' '
+                resS+=tmpS
+            else:
+                resS+=' '
+                resS+=ch
+            tmpS=""
+    if tmpS=="":
+        resS+=tmpS
+    #print(resS)
+    return resS
 def makeDataset(site, fTrain, fTest):
     #print(site)
     with urllib.request.urlopen(site) as url:
@@ -125,7 +120,6 @@ def makeDataset(site, fTrain, fTest):
         site=vkcom+'/'+nextPage
         makeDataset(site)
     '''
-
 def readDataset():
     fT=open('datasetTrain', 'r')
     vectorsSTrain=[]
@@ -138,7 +132,6 @@ def readDataset():
         vectorsS.append(i)
     f.close()
     return vectorsSTrain, vectorsS
-
 
 def train(datasetTrain, dataset):
     # Obtain some string samples.http://localhost:8888/notebooks/p/py/Untitled%20Folder/main.ipynb#
@@ -156,9 +149,6 @@ def train(datasetTrain, dataset):
 def clusterization(vectors):
     model = DBSCAN(eps=eps, min_samples=minSmpl).fit(vectors)
     return model
-
-
-
 def make(id):
     site=vkcom+'/'+id+'?offset=50&own=1'
     fTrain=open('datasetTrain', 'w')
@@ -166,8 +156,6 @@ def make(id):
     makeDataset(site,  fTrain, fTest)
     fTrain.close()
     fTest.close()
-
-
 '''
 def action(event):
     ent.delete("1.0", END)
@@ -189,25 +177,30 @@ root.mainloop()
 #vectors=train(vectorsString)
 #print(vectors)
 #model = clusterization(vectors)
-make(vkid)
-vectorsStringTrain,vectorsString=readDataset()
-vectors,vectors1=train(vectorsStringTrain, vectorsString)
-model=clusterization(vectors)
-neigh = KNeighborsClassifier(n_neighbors=2)
-labels=[]
-for i in range (len(model.labels_)):
-    if (model.labels_[i]==-1):
-        labels.append("OK")
-    else:
-        labels.append("SPAM")
-neigh.fit(vectors, labels)
-#print(vectors.shape[1],vectors1.shape[1])
-resTest = neigh.predict(vectors1)
-for i in range(len(vectorsString)):
-    print(resTest[i], vectorsString[i])
-print(len(set(model.labels_)))
-for j in range (len(set(model.labels_))):
-    print ( "!!!!!!!!!!!!!!", j-1, "!!!!!!!!!!!!!!")
-    for i in range(len(vectorsStringTrain)):
-        if (model.labels_[i]==j-1):
-            print(vectorsStringTrain[i])
+def main():
+        #make(vkid)
+        vectorsStringTrain,vectorsString=readDataset()
+        vectors,vectors1=train(vectorsStringTrain, vectorsString)
+        model=clusterization(vectors)
+        neigh = KNeighborsClassifier(n_neighbors=2)
+        labels=[]
+        for i in range (len(model.labels_)):
+            if (model.labels_[i]==-1):
+                labels.append("OK  ")
+            else:
+                labels.append("SPAM")
+        neigh.fit(vectors, labels)
+        #print(vectors.shape[1],vectors1.shape[1])
+        resTest = neigh.predict(vectors1)
+        for i in range(len(vectorsString)):
+            print(resTest[i], vectorsString[i])
+        print(len(set(model.labels_)))
+        fClusts=open('clusters', 'w')
+        for j in range (len(set(model.labels_))):
+            #print( "!!!!!!!!!!!!!!", j-1, "!!!!!!!!!!!!!!")
+            fClusts.write("!!!!!!!!!!!!!!"+str(j-1)+"!!!!!!!!!!!!!!")
+            for i in range(len(vectorsStringTrain)):
+                if (model.labels_[i]==j-1):
+                	fClusts.write(vectorsStringTrain[i]+'\n')
+                    #print(vectorsStringTrain[i])
+main()
